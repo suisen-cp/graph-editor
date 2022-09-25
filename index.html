@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+    <title>{{ site.title }}</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+</head>
+
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="./index.html">{{ site.title }}</a>
+    </nav>
+    <div class="container">
+        <div class="row mt-1">
+            <div class="col-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card_title">Add Node</h4>
+                        <div class="form-group row">
+                            <label for="add-node-label-input" class="col-sm-5 col-form-label">label:</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="add-node-label-input">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="add-node-color-input" class="col-sm-5 col-form-label">color<span
+                                    style="color:red">*</span>:</label>
+                            <div class="col-sm-7">
+                                <input id="add-node-color-input" type="color" value="#2222cc">
+                            </div>
+                        </div>
+                        <button id="add-node-submit" class="btn btn-primary w-100">apply</button>
+                    </div>
+                </div>
+                <div class="card mt-1">
+                    <div class="card-body">
+                        <h4 class="card_title">Add Edge</h4>
+                        <div class="form-group row">
+                            <label for="add-edge-label-input" class="col-sm-5 col-form-label">label:</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="add-edge-label-input">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="add-edge-src-input" class="col-sm-5 col-form-label">from<span
+                                    style="color:red">*</span>:</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="add-edge-src-input">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="add-edge-dst-input" class="col-sm-5 col-form-label">to<span
+                                    style="color:red">*</span>:</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="add-edge-dst-input">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                <input name="add-edge-directed-input" value="directed" type="radio" checked> Directed
+                                <input name="add-edge-directed-input" value="undirected" type="radio"> Undirected
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="add-edge-color-input" class="col-sm-5 col-form-label">color<span
+                                    style="color:red">*</span>:</label>
+                            <div class="col-sm-7">
+                                <input id="add-edge-color-input" type="color" value="#000000">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="add-edge-weight-input" class="col-sm-5 col-form-label">weight:</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="add-edge-weight-input">
+                            </div>
+                        </div>
+                        <button id="add-edge-submit" class="btn btn-primary w-100">apply</button>
+                    </div>
+                </div>
+                <div class="card mt-1">
+                    <div class="card-body">
+                        <h4 class="card_title">Layout</h4>
+                        <div>
+                            <div>
+                                <input name="change-layout-input" value="grid" type="radio"> Grid
+                            </div>
+                            <div>
+                                <input name="change-layout-input" value="random" type="radio"> Random
+                            </div>
+                            <div>
+                                <input name="change-layout-input" value="cose" type="radio"> Spring
+                            </div>
+                            <div>
+                                <input name="change-layout-input" value="breadthfirst" type="radio"> BFS
+                            </div>
+                            <button id="change-layout-submit" class="btn btn-primary w-100">apply</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-1">
+                    <div class="card-body">
+                        <h4 class="card_title">Save Graph</h4>
+                        <div>
+                            <div>
+                                <input name="save-input" value="json" type="radio"> .json
+                            </div>
+                            <div>
+                                <input name="save-input" value="png" type="radio"> .png
+                            </div>
+                            <div>
+                                <input name="save-input" value="jpg" type="radio"> .jpg
+                            </div>
+                            <button id="save-submit" class="btn btn-primary w-100">show</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-9">
+                <div class="row">
+                    <div class="col-6">
+                        <h4 class="card_title">Canvas</h4>
+                    </div>
+                    <div class="col-6 text-right">
+                        <button class="btn btn-primary" onclick="cy.reset();">Reset View Point</button>
+                        <button class="btn btn-danger" id="clear-btn">Clear</button>
+                    </div>
+                </div>
+                <div id="cy" class="w-100" style="border: 1px solid black; height: 1000px;"></div>
+            </div>
+        </div>
+        <div id="output"></div>
+        <!-- <div>
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card_title">Option</h4>
+                    <div id="options"></div>
+                </div>
+            </div>
+        </div> -->
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/cytoscape/3.23.0/cytoscape.min.js"></script>
+    <script src="assets/app.js"></script>
+</body>
+
+</html>
