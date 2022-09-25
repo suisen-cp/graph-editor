@@ -1,35 +1,3 @@
-// const make_options = function (option_name, id, options) {
-//     const selector_html = `
-//         <div>
-//             <h6>${option_name}</h6>
-//         </div>
-//         ${Array.from({ length: options.length }, (_, i) => `
-//             <div class="custom-control custom-radio">
-//                 <input type="radio" id="${id}-${i}" name="${id}" class="custom-control-input" ${i == 0 ? 'checked' : ''}>
-//                 <label class="custom-control-label" for="${id}-${i}">${options[i]}</label>
-//             </div>
-//         `).join('\n')}
-//     `;
-//     const new_selector_element = document.createElement('div');
-//     new_selector_element.innerHTML = selector_html;
-//     new_selector_element.classList.add('mt-1');
-//     document.getElementById('options').appendChild(new_selector_element);
-// };
-
-// const graphTypeButtonId = 'graphTypeButton';
-// const graphTypeList = ['Undirected', 'Directed'];
-// const indexTypeButtonId = 'indexTypeButton';
-// const indexTypeList = ['0-indexed', '1-indexed'];
-// const weightTypeButtonId = 'weightTypeButton';
-// const weightTypeList = ['Unweighted', 'Weighted'];
-// const formatTypeButtonId = 'formatTypeButton';
-// const formatTypeList = ['.txt (CP-Like)', '.json', '.png', '.jpg'];
-
-// make_options("Edge", graphTypeButtonId, graphTypeList);
-// make_options("Index", indexTypeButtonId, indexTypeList);
-// make_options("Weight", weightTypeButtonId, weightTypeList);
-// make_options("Saving Format", formatTypeButtonId, formatTypeList);
-
 let cy = cytoscape({
     container: document.getElementById('cy'),
     style: [
@@ -73,118 +41,135 @@ let cy = cytoscape({
     ],
 });
 
-let next_node_id = 0;
-const add_new_node = function (name, color) {
-    const node_id = "v" + next_node_id;
-    let new_node = {
-        group: 'nodes',
-        data: { id: node_id, 'color': color },
-    };
-    if (name != '') new_node.data.name = name;
-
-    cy.add(new_node);
-
-    cy.$id(node_id).on('mousedown', function (event) {
-        const node_id = event.target.id();
-        const node = cy.$id(node_id);
-        node.css('background-color', 'magenta');
-        for (edge of cy.edges(`[source = "${node_id}"]`)) {
+const event_node_mousedown = function (event) {
+    const node_id = event.target.id();
+    const node = cy.$id(node_id);
+    node.css('background-color', 'magenta');
+    for (edge of cy.edges(`[source = "${node_id}"]`)) {
+        edge.css('line-color', 'magenta');
+        if (edge.data('directed') === 'directed') {
+            edge.css('target-arrow-color', 'magenta');
+        }
+    }
+    for (edge of cy.edges(`[target = "${node_id}"]`)) {
+        if (edge.data('directed') === 'undirected') {
             edge.css('line-color', 'magenta');
-            if (edge.data('directed') === 'directed') {
-                edge.css('target-arrow-color', 'magenta');
-            }
         }
-        for (edge of cy.edges(`[target = "${node_id}"]`)) {
-            if (edge.data('directed') === 'undirected') {
-                edge.css('line-color', 'magenta');
-            }
-        }
-    });
-    cy.$id(node_id).on('mouseup', function (event) {
-        const node_id = event.target.id();
-        const node = cy.$id(node_id);
-        node.css('background-color', node.data('color'));
-        for (edge of cy.edges(`[source = "${node_id}"]`)) {
-            edge.css('line-color', edge.data('color'));
-            if (edge.data('directed') === 'directed') {
-                edge.css('target-arrow-color', edge.data('color'));
-            }
-        }
-        for (edge of cy.edges(`[target = "${node_id}"]`)) {
-            if (edge.data('directed') === 'undirected') {
-                edge.css('line-color', edge.data('color'));
-            }
-        }
-    });
-    ++next_node_id;
+    }
 };
-document.getElementById("add-node-submit").addEventListener('click', function (event) {
-    const name = document.getElementById("add-node-label-input").value;
-    const color = document.getElementById("add-node-color-input").value;
-    add_new_node(name, color);
+const event_node_mouseup = function (event) {
+    const node_id = event.target.id();
+    const node = cy.$id(node_id);
+    node.css('background-color', node.data('color'));
+    for (edge of cy.edges(`[source = "${node_id}"]`)) {
+        edge.css('line-color', edge.data('color'));
+        if (edge.data('directed') === 'directed') {
+            edge.css('target-arrow-color', edge.data('color'));
+        }
+    }
+    for (edge of cy.edges(`[target = "${node_id}"]`)) {
+        if (edge.data('directed') === 'undirected') {
+            edge.css('line-color', edge.data('color'));
+        }
+    }
+};
+
+let node_maker = new class {
+    constructor() {
+        this.next_node_id = 0;
+    }
+
+    make_new_node(name, color) {
+        const node_id = "v" + this.next_node_id;
+        let new_node = {
+            group: 'nodes',
+            data: { id: node_id, 'color': color },
+        };
+        if (name != '') new_node.data.name = name;
+        cy.add(new_node);
+        cy.$id(node_id).on('mousedown', event_node_mousedown);
+        cy.$id(node_id).on('mouseup', event_node_mouseup);
+        ++this.next_node_id;
+    }
+
+    reset() {
+        this.next_node_id = 0;
+    }
+}();
+
+$("#add-node-submit").click(function () {
+    node_maker.make_new_node($("#add-node-label-input").val(), $("#add-node-color-input").val());
 });
 
-let next_edge_id = 0;
-const add_new_edge = function (label, src, dst, weight, color, directed) {
-    if (weight === '') {
-        weight = 0;
+let edge_maker = new class {
+    constructor() {
+        this.next_edge_id = 0;
     }
-    console.log(label, src, dst, weight, color, directed);
-    const edge_id = "e" + next_edge_id;
-    let new_edge = {
-        group: 'edges',
-        data: {
-            id: edge_id,
-            name: label,
-            source: src,
-            target: dst,
-            color: color,
-            directed: directed,
-            weight: weight
-        },
-    };
 
-    cy.add(new_edge);
-    ++next_edge_id;
-};
+    make_new_edge(label, src, dst, weight, color, directed) {
+        if (weight === '') {
+            weight = 0;
+        }
+        const edge_id = "e" + this.next_edge_id;
+        let new_edge = {
+            group: 'edges',
+            data: {
+                id: edge_id,
+                name: label,
+                source: src,
+                target: dst,
+                color: color,
+                directed: directed,
+                weight: weight
+            },
+        };
+    
+        cy.add(new_edge);
+        ++this.next_edge_id;
+    }
 
-document.getElementById("add-edge-submit").addEventListener('click', function (event) {
-    const label = document.getElementById("add-edge-label-input").value;
-    const src = document.getElementById("add-edge-src-input").value;
-    const dst = document.getElementById("add-edge-dst-input").value;
-    const weight = document.getElementById("add-edge-weight-input").value;
-    const color = document.getElementById("add-edge-color-input").value;
-    const directed = document.querySelector('input[name="add-edge-directed-input"]:checked').value;
-    add_new_edge(label, src, dst, weight, color, directed);
+    reset() {
+        this.next_edge_id = 0;
+    }
+}();
+
+$("#add-edge-submit").click(function () {
+    const label = $("#add-edge-label-input").val();
+    const src = $("#add-edge-src-input").val();
+    const dst = $("#add-edge-dst-input").val();
+    const weight = $("#add-edge-weight-input").val();
+    const color = $("#add-edge-color-input").val();
+    const directed = $('input[name="add-edge-directed-input"]:checked').val();
+    edge_maker.make_new_edge(label, src, dst, weight, color, directed);
 });
 
 const apply_layout = function (name) {
     cy.layout({ name: name }).run();
 };
-document.getElementById("change-layout-submit").addEventListener('click', function (event) {
-    const layout_name = document.querySelector('input[name="change-layout-input"]:checked').value;
-    apply_layout(layout_name);
+$("#change-layout-submit").click(function () {
+    apply_layout($('input[name="change-layout-input"]:checked').val());
 });
 
-document.getElementById("save-submit").addEventListener('click', function () {
-    const save_format = document.querySelector('input[name="save-input"]:checked').value;
+$("#save-submit").click(function () {
+    const save_format = $('input[name="save-input"]:checked').val();
     if (save_format === 'json') {
         let elm = document.createElement('div');
         elm.textContent = JSON.stringify(cy.json());
-        document.getElementById("output").appendChild(elm);
+        $("#output").append(elm);
     } else if (save_format === 'jpg') {
         let elm = document.createElement('img');
         elm.src = cy.jpg();
-        document.getElementById("output").appendChild(elm);
+        $("#output").append(elm);
     } else if (save_format === 'png') {
-        const elm = document.createElement('img');
+        let elm = document.createElement('img');
         elm.src = cy.png();
-        document.getElementById("output").appendChild(elm);
+        $("#output").append(elm);
     }
 });
 
-document.getElementById("clear-btn").addEventListener('click', function () {
+$("#clear-btn").click(function () {
     cy.remove('');
     cy.reset();
-    next_node_id = next_edge_id = 0;
+    node_maker.reset();
+    edge_maker.reset();
 });

@@ -1,11 +1,10 @@
 ---
 layout: page
-title: Apps by suisen-cp
 ---
 
 {% assign apps = site.apps | sort %}
 {% for app in apps %}
-<div class="card">
+<div class="card mt-1">
     <div class="card-body">
         <h5 class="card-title"><a href="{{ app[1].url | absolute_url }}">{{ app[1].title }}</a></h5>
         <p class="card-text">{{ app[1].description }}</p>

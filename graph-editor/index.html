@@ -3,110 +3,76 @@ layout: page
 title: Graph Editor
 scripts:
     - https://cdn.bootcss.com/cytoscape/3.23.0/cytoscape.min.js
-    - graph-editor/assets/graph-editor.js
+    - /apps/graph-editor/assets/graph-editor.js
+
+radio_opts:
+    edge_dir:
+        directed:
+            value: directed
+            label: Directed
+            checked: 1
+        undirected:
+            value: undirected
+            label: Undirected
+    layout:
+        grid:
+            value: grid
+            label: Grid
+        random:
+            value: random
+            label: Random
+        spring:
+            value: cose
+            label: Spring
+        bfs:
+            value: breadthfirst
+            label: BFS
+    save_format:
+        json:
+            value: json
+            label: .json
+        png:
+            value: png
+            label: .png
+        jpg:
+            value: jpg
+            label: .jpg
 ---
 
 <div class="row mt-1">
     <div class="col-3">
-        <div class="card">
+        <div class="card mt-1">
             <div class="card-body">
                 <h4 class="card_title">Add Node</h4>
-                <div class="form-group row">
-                    <label for="add-node-label-input" class="col-sm-5 col-form-label">label:</label>
-                    <div class="col-sm-7">
-                        <input type="text" class="form-control" id="add-node-label-input">
-                    </div>
-                </div>
-                <div class="form-group row mt-1">
-                    <label for="add-node-color-input" class="col-sm-5 col-form-label">color<span
-                            style="color:red">*</span>:</label>
-                    <div class="col-sm-7">
-                        <input id="add-node-color-input" type="color" value="#2222cc">
-                    </div>
-                </div>
+                {% include_relative module/text_input_optional.html id='add-node-label-input' label='label' %}
+                {% include_relative module/color_input.html id='add-node-color-input' default_color='#2222cc' %}
                 <button id="add-node-submit" class="btn btn-primary w-100 mt-1">apply</button>
             </div>
         </div>
         <div class="card mt-1">
             <div class="card-body">
                 <h4 class="card_title">Add Edge</h4>
-                <div class="form-group row">
-                    <label for="add-edge-label-input" class="col-sm-5 col-form-label">label:</label>
-                    <div class="col-sm-7">
-                        <input type="text" class="form-control" id="add-edge-label-input">
-                    </div>
-                </div>
-                <div class="form-group row mt-1">
-                    <label for="add-edge-src-input" class="col-sm-5 col-form-label">from<span
-                            style="color:red">*</span>:</label>
-                    <div class="col-sm-7">
-                        <input type="text" class="form-control" id="add-edge-src-input">
-                    </div>
-                </div>
-                <div class="form-group row mt-1">
-                    <label for="add-edge-dst-input" class="col-sm-5 col-form-label">to<span
-                            style="color:red">*</span>:</label>
-                    <div class="col-sm-7">
-                        <input type="text" class="form-control" id="add-edge-dst-input">
-                    </div>
-                </div>
-                <div class="form-group row mt-1">
-                    <div class="col-sm-12">
-                        <input name="add-edge-directed-input" value="directed" type="radio" checked> Directed
-                        <input name="add-edge-directed-input" value="undirected" type="radio"> Undirected
-                    </div>
-                </div>
-                <div class="form-group row mt-1">
-                    <label for="add-edge-color-input" class="col-sm-5 col-form-label">color<span
-                            style="color:red">*</span>:</label>
-                    <div class="col-sm-7">
-                        <input id="add-edge-color-input" type="color" value="#000000">
-                    </div>
-                </div>
-                <div class="form-group row mt-1">
-                    <label for="add-edge-weight-input" class="col-sm-5 col-form-label">weight:</label>
-                    <div class="col-sm-7">
-                        <input type="text" class="form-control" id="add-edge-weight-input">
-                    </div>
-                </div>
+                {% include_relative module/text_input_optional.html id='add-edge-label-input' label='label' %}
+                {% include_relative module/text_input.html id='add-edge-src-input' label='from' %}
+                {% include_relative module/text_input.html id='add-edge-dst-input' label='to' %}
+                {% include_relative module/radio_input.html name='add-edge-directed-input' options=page.radio_opts.edge_dir %}
+                {% include_relative module/color_input.html id='add-edge-color-input' default_color='#000000' %}
+                {% include_relative module/text_input_optional.html id='add-edge-weight-input' label='weight' %}
                 <button id="add-edge-submit" class="btn btn-primary w-100 mt-1">apply</button>
             </div>
         </div>
         <div class="card mt-1">
             <div class="card-body">
                 <h4 class="card_title">Layout</h4>
-                <div>
-                    <div>
-                        <input name="change-layout-input" value="grid" type="radio"> Grid
-                    </div>
-                    <div>
-                        <input name="change-layout-input" value="random" type="radio"> Random
-                    </div>
-                    <div>
-                        <input name="change-layout-input" value="cose" type="radio"> Spring
-                    </div>
-                    <div>
-                        <input name="change-layout-input" value="breadthfirst" type="radio"> BFS
-                    </div>
-                    <button id="change-layout-submit" class="btn btn-primary w-100 mt-1">apply</button>
-                </div>
+                {% include_relative module/radio_input.html name='change-layout-input' options=page.radio_opts.layout %}
+                <button id="change-layout-submit" class="btn btn-primary w-100 mt-1">apply</button>
             </div>
         </div>
         <div class="card mt-1">
             <div class="card-body">
                 <h4 class="card_title">Save Graph</h4>
-                <div>
-                    <div>
-                        <input name="save-input" value="json" type="radio"> .json
-                    </div>
-                    <div>
-                        <input name="save-input" value="png" type="radio"> .png
-                    </div>
-                    <div>
-                        <input name="save-input" value="jpg" type="radio"> .jpg
-                    </div>
-                    <button id="save-submit" class="btn btn-primary w-100 mt-1">show</button>
-                </div>
+                {% include_relative module/radio_input.html name='save-input' options=page.radio_opts.save_format %}
+                <button id="save-submit" class="btn btn-primary w-100 mt-1">show</button>
             </div>
         </div>
     </div>

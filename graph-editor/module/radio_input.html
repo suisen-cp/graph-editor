@@ -1,0 +1,14 @@
+<div class="form-group row mt-1">
+    {% for option in include.options %}
+    {% assign value = option[1].value %}
+    {% assign label = option[1].label %}
+    {% if option[1].checked %}
+        {% assign check = "checked" %}
+    {% else %}
+        {% assign check = "" %}
+    {% endif %}
+    <div>
+        <input name="{{ include.name }}" value="{{ value }}" type="radio" {{ check }}> {{ label }}
+    </div>
+    {% endfor %}
+</div>
