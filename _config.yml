@@ -18,12 +18,11 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Graph Editor
-description: GUI tool for editing network graphs
+title: Apps by suisen-cp
+description: Apps by suisen-cp
 domain: suisen-cp.github.io
-baseurl: /graph-editor/
+baseurl: /apps/
 url: https://suisen-cp.github.io
-twitter_username: _su1sen
 github_username: suisen-cp
 
 # Build settings
@@ -50,3 +49,9 @@ plugins:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+apps:
+  graph-editor:
+    title: Graph Editor
+    description: GUI tool for editing network graphs
+    url: graph-editor
