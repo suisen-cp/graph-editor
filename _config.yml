@@ -6,8 +6,7 @@ theme: minima
 plugins:
   - jekyll-feed
 
-apps:
-  graph-editor:
-    title: Graph Editor
-    description: GUI tool for editing network graphs
-    url: graph-editor
+graph-editor:
+  title: Graph Editor
+  description: GUI tool for editing network graphs
+  url: graph-editor

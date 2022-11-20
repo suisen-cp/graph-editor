@@ -1,13 +1,92 @@
 ---
 layout: page
+title: Graph Editor
+scripts:
+    - https://cdn.bootcss.com/cytoscape/3.23.0/cytoscape.min.js
+    - /graph-editor/assets/graph-editor.js
+
+radio_opts:
+    edge_dir:
+        directed:
+            value: directed
+            label: Directed
+            checked: 1
+        undirected:
+            value: undirected
+            label: Undirected
+    layout:
+        grid:
+            value: grid
+            label: Grid
+        random:
+            value: random
+            label: Random
+        spring:
+            value: cose
+            label: Spring
+        bfs:
+            value: breadthfirst
+            label: BFS
+    save_format:
+        json:
+            value: json
+            label: .json
+        png:
+            value: png
+            label: .png
+        jpg:
+            value: jpg
+            label: .jpg
 ---
 
-{% assign apps = site.apps | sort %}
-{% for app in apps %}
-<div class="card mt-1">
-    <div class="card-body">
-        <h5 class="card-title"><a href="{{ app[1].url | absolute_url }}">{{ app[1].title }}</a></h5>
-        <p class="card-text">{{ app[1].description }}</p>
+<div class="row mt-1">
+    <div class="col-3">
+        <div class="card mt-1">
+            <div class="card-body">
+                <h4 class="card_title">Add Node</h4>
+                {% include_relative module/text_input_optional.html id='add-node-label-input' label='label' %}
+                {% include_relative module/color_input.html id='add-node-color-input' default_color='#2222cc' %}
+                <button id="add-node-submit" class="btn btn-primary w-100 mt-1">apply</button>
+            </div>
+        </div>
+        <div class="card mt-1">
+            <div class="card-body">
+                <h4 class="card_title">Add Edge</h4>
+                {% include_relative module/text_input_optional.html id='add-edge-label-input' label='label' %}
+                {% include_relative module/text_input.html id='add-edge-src-input' label='from' %}
+                {% include_relative module/text_input.html id='add-edge-dst-input' label='to' %}
+                {% include_relative module/radio_input.html name='add-edge-directed-input' options=page.radio_opts.edge_dir %}
+                {% include_relative module/color_input.html id='add-edge-color-input' default_color='#000000' %}
+                {% include_relative module/text_input_optional.html id='add-edge-weight-input' label='weight' %}
+                <button id="add-edge-submit" class="btn btn-primary w-100 mt-1">apply</button>
+            </div>
+        </div>
+        <div class="card mt-1">
+            <div class="card-body">
+                <h4 class="card_title">Layout</h4>
+                {% include_relative module/radio_input.html name='change-layout-input' options=page.radio_opts.layout %}
+                <button id="change-layout-submit" class="btn btn-primary w-100 mt-1">apply</button>
+            </div>
+        </div>
+        <div class="card mt-1">
+            <div class="card-body">
+                <h4 class="card_title">Save Graph</h4>
+                {% include_relative module/radio_input.html name='save-input' options=page.radio_opts.save_format %}
+                <button id="save-submit" class="btn btn-primary w-100 mt-1">show</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-9">
+        <div class="row">
+            <div class="col-6">
+                <h4 class="card_title">Canvas</h4>
+            </div>
+            <div class="col-6 text-end">
+                <button class="btn btn-primary" onclick="cy.reset();">Reset View Point</button>
+                <button class="btn btn-danger" id="clear-btn">Clear</button>
+            </div>
+        </div>
+        <div id="cy" class="w-100" style="border: 1px solid black; height: 1000px;"></div>
     </div>
 </div>
-{% endfor %}
+<div id="output"></div>
