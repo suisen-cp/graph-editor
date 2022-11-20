@@ -1,5 +1,5 @@
 domain: suisen-cp.github.io
-baseurl: /apps/
+baseurl: /
 url: https://suisen-cp.github.io
 
 theme: minima
